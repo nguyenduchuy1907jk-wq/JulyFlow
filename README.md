@@ -16,7 +16,7 @@
 
 JulyFlow được phát triển từ nhu cầu cá nhân trong quá trình học tiếng Anh, đặc biệt là việc xây dựng và duy trì vốn từ vựng phục vụ cho IELTS cũng như giao tiếp trong cuộc sống hằng ngày.
 
-Ý tưởng của dự án được lấy cảm hứng từ **LexFlow**, một dự án của người bạn của mình. Từ những cảm hứng ban đầu đó, mình muốn thử phát triển một ứng dụng theo cách tiếp cận riêng, tập trung vào việc lưu trữ, ôn tập và thực hành từ vựng tiếng Anh.
+Ý tưởng của dự án được lấy cảm hứng từ **LexFlow**, một dự án của người bạn của mình - Nguyễn Lê Anh Tuấn. Từ những cảm hứng ban đầu đó, mình muốn thử phát triển một ứng dụng theo cách tiếp cận riêng, tập trung vào việc lưu trữ, ôn tập và thực hành từ vựng tiếng Anh.
 
 Mình nhận ra rằng việc học từ vựng không đơn giản chỉ là ghi nhớ nghĩa của một từ. Điều quan trọng hơn là hiểu cách từ đó được sử dụng, biết những từ thường đi cùng nó và có thể chủ động vận dụng trong quá trình nói hoặc viết.
 
