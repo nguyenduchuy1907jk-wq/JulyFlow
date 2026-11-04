@@ -1,0 +1,13 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=JulyFlow
+GenericName=English Vocabulary App
+Comment=Spaced Repetition & AI Vocabulary Learning App (Tokyo Night Theme)
+Exec=/home/huy/baitap/JulyFlow/run_julyflow.sh
+Icon=accessories-dictionary
+Terminal=false
+Categories=Education;Languages;
+StartupNotify=true
+StartupWMClass=JulyFlow
+

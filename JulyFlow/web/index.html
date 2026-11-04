@@ -1,0 +1,586 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>JulyFlow — English Vocabulary & Spaced Repetition</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div id="app-container">
+    <!-- ── HEADER ── -->
+    <header>
+      <div class="logo-area" onclick="switchTab('dashboard')">
+        <span class="logo-icon">🌊</span>
+        <span class="logo-text">JulyFlow</span>
+        <span class="logo-badge">Tokyo Night</span>
+      </div>
+
+      <div class="header-badges">
+        <div class="badge-item badge-streak">
+          <span>🔥</span> <span id="header-streak">0 ngày</span>
+        </div>
+        <div class="badge-item badge-due">
+          <span>📚</span> <span id="header-due">0 cần ôn</span>
+        </div>
+        <div class="badge-item badge-total">
+          <span>📝</span> <span id="header-total">0 từ</span>
+        </div>
+        <button class="btn btn-secondary" style="padding: 6px 12px; font-size: 12px;" onclick="openSettingsModal()">
+          ⚙️ Cài đặt
+        </button>
+      </div>
+    </header>
+
+    <!-- ── WORKSPACE ── -->
+    <div class="workspace">
+      <!-- ── SIDEBAR ── -->
+      <aside class="sidebar">
+        <div>
+          <div class="nav-section-title">Học tập & Ôn luyện</div>
+          <div class="nav-menu">
+            <button class="nav-btn active" data-tab="dashboard" onclick="switchTab('dashboard')">
+              <span class="icon">📊</span> Tổng quan
+            </button>
+            <button class="nav-btn" data-tab="flashcards" onclick="switchTab('flashcards')">
+              <span class="icon">🃏</span> Flashcards (SRS)
+            </button>
+            <button class="nav-btn" data-tab="practice" onclick="switchTab('practice')">
+              <span class="icon">✍️</span> Luyện tập & Test
+            </button>
+            <button class="nav-btn" data-tab="vocabulary" onclick="switchTab('vocabulary')">
+              <span class="icon">📚</span> Kho từ vựng
+            </button>
+          </div>
+
+          <div class="nav-section-title" style="margin-top: 14px;">Trí tuệ nhân tạo</div>
+          <div class="nav-menu">
+            <button class="nav-btn" data-tab="ai-hub" onclick="switchTab('ai-hub')">
+              <span class="icon">✨</span> AI Hub
+            </button>
+          </div>
+
+          <div class="nav-section-title" style="margin-top: 14px;">Dữ liệu & Tiến độ</div>
+          <div class="nav-menu">
+            <button class="nav-btn" data-tab="analytics" onclick="switchTab('analytics')">
+              <span class="icon">📈</span> Tiến độ & Lịch sử
+            </button>
+            <button class="nav-btn" data-tab="data-manager" onclick="switchTab('data-manager')">
+              <span class="icon">📥</span> Import / Export
+            </button>
+          </div>
+        </div>
+
+        <div>
+          <button class="btn btn-primary" style="width: 100%; font-size: 13px;" onclick="openAddWordModal()">
+            ➕ Thêm từ mới
+          </button>
+        </div>
+      </aside>
+
+      <!-- ── CONTENT PANELS ── -->
+      <main class="content-area">
+
+        <!-- ═════════ TAB 1: DASHBOARD ═════════ -->
+        <div id="tab-dashboard" class="tab-panel active">
+          <div class="page-header">
+            <h1 class="page-title">Chào mừng trở lại! 👋</h1>
+            <p class="page-desc" id="dash-greeting">Hãy duy trì thói quen ôn tập mỗi ngày cùng thuật toán Spaced Repetition.</p>
+          </div>
+
+          <div class="stats-grid">
+            <div class="stat-box" style="--accent-color: var(--tn-blue);">
+              <span class="stat-label">Tổng từ vựng</span>
+              <span class="stat-val" id="stat-total">0</span>
+              <span class="stat-sub">Kho từ của bạn</span>
+            </div>
+            <div class="stat-box" style="--accent-color: var(--tn-magenta);">
+              <span class="stat-label">Cần ôn hôm nay</span>
+              <span class="stat-val" id="stat-due">0</span>
+              <span class="stat-sub">Theo lịch SM-2</span>
+            </div>
+            <div class="stat-box" style="--accent-color: var(--tn-orange);">
+              <span class="stat-label">Study Streak</span>
+              <span class="stat-val" id="stat-streak">0</span>
+              <span class="stat-sub">Số ngày liên tiếp</span>
+            </div>
+            <div class="stat-box" style="--accent-color: var(--tn-purple);">
+              <span class="stat-label">Đã thuộc lòng</span>
+              <span class="stat-val" id="stat-mastered">0</span>
+              <span class="stat-sub">Interval &gt; 30 ngày</span>
+            </div>
+          </div>
+
+          <!-- Quick Actions & Weekly Chart -->
+          <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 16px; margin-bottom: 20px;">
+            <div class="glass-card">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;">
+                <h3 style="font-size: 15px; font-weight: 700; color: var(--tn-blue);">📊 Thống kê ôn tập 7 ngày qua</h3>
+                <span style="font-size: 11px; color: var(--text-muted);" id="stat-accuracy">Độ chính xác: 0%</span>
+              </div>
+              <div id="weekly-chart" style="display: flex; align-items: flex-end; gap: 12px; height: 160px; padding-top: 20px;">
+                <!-- Biểu đồ được vẽ động bằng JS -->
+              </div>
+            </div>
+
+            <div class="glass-card" style="display: flex; flex-direction: column; justify-content: space-between;">
+              <div>
+                <h3 style="font-size: 15px; font-weight: 700; color: var(--tn-cyan); margin-bottom: 12px;">⚡ Lối tắt học nhanh</h3>
+                <div style="display: flex; flex-direction: column; gap: 8px;">
+                  <button class="btn btn-primary" onclick="startFlashcardReview()">
+                    📚 Ôn tập thẻ đến hạn
+                  </button>
+                  <button class="btn btn-secondary" onclick="switchTab('practice')">
+                    ✍️ Làm bài kiểm tra gõ từ
+                  </button>
+                  <button class="btn btn-ai" onclick="switchTab('ai-hub')">
+                    ✨ Trợ lý AI phân tích từ
+                  </button>
+                </div>
+              </div>
+              <div style="font-size: 11px; color: var(--text-dim); text-align: center; margin-top: 14px;">
+                JulyFlow • Spaced Repetition Engine
+              </div>
+            </div>
+          </div>
+
+          <!-- Weak words section -->
+          <div class="glass-card">
+            <h3 style="font-size: 15px; font-weight: 700; color: var(--tn-magenta); margin-bottom: 12px;">
+              ⚠️ Từ vựng cần chú ý (Hay làm sai)
+            </h3>
+            <div id="dash-weak-list">
+              <!-- Danh sách từ yếu -->
+            </div>
+          </div>
+        </div>
+
+        <!-- ═════════ TAB 2: FLASHCARDS (SRS) ═════════ -->
+        <div id="tab-flashcards" class="tab-panel">
+          <div class="page-header" style="display: flex; justify-content: space-between; align-items: center;">
+            <div>
+              <h1 class="page-title">🃏 Spaced Repetition Flashcards</h1>
+              <p class="page-desc">Thuật toán SM-2 tự động tính toán thời gian lặp lại: 1, 3, 7, 10, 30 ngày.</p>
+            </div>
+            <div style="display: flex; gap: 8px;">
+              <button class="btn btn-secondary" onclick="loadFlashcardSession('due')">📚 Từ đến hạn</button>
+              <button class="btn btn-secondary" onclick="loadFlashcardSession('new')">🆕 Từ mới</button>
+              <button class="btn btn-secondary" onclick="loadFlashcardSession('all')">🔀 Ngẫu nhiên</button>
+            </div>
+          </div>
+
+          <!-- Flashcard View -->
+          <div id="fc-container">
+            <div style="display: flex; justify-content: space-between; align-items: center; max-width: 620px; margin: 0 auto;">
+              <span id="fc-progress" style="font-size: 12px; color: var(--text-muted);">0 / 0</span>
+              <span style="font-size: 11px; color: var(--text-dim);">Phím tắt: [Space] Lật thẻ • [1-4] Đánh giá</span>
+            </div>
+
+            <div class="flashcard-stage">
+              <div class="flashcard" id="flashcard" onclick="flipFlashcard()">
+                <!-- Front Face -->
+                <div class="flashcard-face front">
+                  <div style="display: flex; justify-content: space-between; width: 100%;">
+                    <span id="fc-type" style="font-size: 12px; font-weight: 700; color: var(--tn-cyan); text-transform: uppercase;">noun</span>
+                    <button class="btn btn-secondary" style="padding: 4px 8px; font-size: 12px;" onclick="event.stopPropagation(); speakCurrentWord();">
+                      🔊 Nghe
+                    </button>
+                  </div>
+                  <div>
+                    <div class="fc-word" id="fc-word">Loading...</div>
+                    <div class="fc-ipa" id="fc-ipa">/.../</div>
+                  </div>
+                  <div style="font-size: 12px; color: var(--text-dim);">
+                    👆 Nhấp vào thẻ hoặc bấm [Space] để xem nghĩa
+                  </div>
+                </div>
+
+                <!-- Back Face -->
+                <div class="flashcard-face back">
+                  <div style="display: flex; justify-content: space-between; width: 100%;">
+                    <span id="fc-context-tag" style="font-size: 11px; color: var(--tn-purple); font-weight: 600;">Daily / Academic</span>
+                    <button class="btn btn-secondary" style="padding: 4px 8px; font-size: 12px;" onclick="event.stopPropagation(); speakCurrentWord();">
+                      🔊
+                    </button>
+                  </div>
+                  <div>
+                    <div class="fc-meaning" id="fc-meaning">Định nghĩa tiếng Việt</div>
+                    <div id="fc-meaning-en" style="font-size: 13px; color: var(--text-muted); margin-top: 4px;">English definition</div>
+                  </div>
+                  <div class="fc-example" id="fc-example">
+                    📖 Example sentence
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- SM-2 Ratings -->
+            <div class="srs-buttons" id="fc-rating-buttons">
+              <button class="btn-rate rate-again" onclick="rateFlashcard(0)">
+                😰 Quên / Sai
+                <span class="rate-interval">+1 ngày</span>
+              </button>
+              <button class="btn-rate rate-hard" onclick="rateFlashcard(3)">
+                😐 Hơi khó
+                <span class="rate-interval">+3 ngày</span>
+              </button>
+              <button class="btn-rate rate-good" onclick="rateFlashcard(4)">
+                🙂 Tốt / Nhớ
+                <span class="rate-interval">+7 ngày</span>
+              </button>
+              <button class="btn-rate rate-easy" onclick="rateFlashcard(5)">
+                🤩 Dễ / Quen
+                <span class="rate-interval">+15-30 ngày</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- ═════════ TAB 3: PRACTICE & TEST ═════════ -->
+        <div id="tab-practice" class="tab-panel">
+          <div class="page-header">
+            <h1 class="page-title">✍️ Practice Mode — Kiểm tra & Luyện tập</h1>
+            <p class="page-desc">Tạo bài kiểm tra bắt điền đúng từ, trắc nghiệm 4 đáp án hoặc điền khuyết câu.</p>
+          </div>
+
+          <div id="practice-setup" class="glass-card" style="max-width: 600px; margin: 0 auto;">
+            <h3 style="font-size: 16px; font-weight: 700; color: var(--tn-blue); margin-bottom: 14px;">Thiết lập bài kiểm tra</h3>
+            
+            <div class="form-group">
+              <label class="form-label">Chế độ luyện tập</label>
+              <select id="pr-mode-select">
+                <option value="typing">⌨️ Typing Test (Gõ từ tiếng Anh theo nghĩa)</option>
+                <option value="fill_blank">📝 Fill in the Blank (Điền từ vào chỗ trống trong câu)</option>
+                <option value="multiple_choice">🔘 Trắc nghiệm 4 đáp án</option>
+                <option value="mistakes">⚠️ Ôn luyện lại danh sách từ sai</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Số lượng từ</label>
+              <select id="pr-count-select">
+                <option value="10">10 từ</option>
+                <option value="15" selected>15 từ</option>
+                <option value="25">25 từ</option>
+                <option value="50">50 từ</option>
+              </select>
+            </div>
+
+            <button class="btn btn-primary" style="width: 100%; margin-top: 10px;" onclick="startPracticeSession()">
+              ▶ Bắt đầu kiểm tra
+            </button>
+          </div>
+
+          <!-- Practice Play Screen -->
+          <div id="practice-play" style="display: none;" class="practice-container">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+              <span id="pr-progress" style="font-size: 13px; font-weight: 600; color: var(--tn-cyan);">Câu 1 / 10</span>
+              <span id="pr-streak" style="font-size: 13px; font-weight: 700; color: var(--tn-orange);">🔥 0 chuỗi</span>
+              <button class="btn btn-secondary" style="font-size: 11px; padding: 4px 8px;" onclick="quitPracticeSession()">Dừng lại</button>
+            </div>
+
+            <div class="glass-card" style="text-align: center; padding: 30px 20px;">
+              <div id="pr-prompt-label" style="font-size: 12px; color: var(--text-dim); text-transform: uppercase; font-weight: 700; margin-bottom: 8px;">
+                Hãy nhập từ tiếng Anh tương ứng
+              </div>
+              <div id="pr-question" style="font-size: 26px; font-weight: 700; color: #fff; margin-bottom: 12px;">
+                Question text
+              </div>
+              <div id="pr-sub-question" style="font-size: 14px; color: var(--text-muted); margin-bottom: 24px;">
+                Context or hint
+              </div>
+
+              <!-- Typing Input Mode -->
+              <div id="pr-typing-area">
+                <input type="text" id="pr-input" class="typing-input" placeholder="Gõ từ tại đây và nhấn Enter..." autocomplete="off">
+                <div style="display: flex; justify-content: center; gap: 10px; margin-top: 12px;">
+                  <button class="btn btn-secondary" onclick="givePracticeHint()">💡 Gợi ý chữ cái đầu</button>
+                  <button class="btn btn-primary" onclick="submitPracticeAnswer()">Xác nhận (Enter)</button>
+                </div>
+              </div>
+
+              <!-- Multiple Choice Mode -->
+              <div id="pr-mc-area" style="display: none;" class="mc-grid">
+                <!-- 4 Options -->
+              </div>
+
+              <!-- Feedback Result -->
+              <div id="pr-feedback" style="margin-top: 18px; font-size: 15px; font-weight: 600; min-height: 24px;"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ═════════ TAB 4: VOCABULARY HUB ═════════ -->
+        <div id="tab-vocabulary" class="tab-panel">
+          <div class="page-header" style="display: flex; justify-content: space-between; align-items: center;">
+            <div>
+              <h1 class="page-title">📚 Kho từ vựng cá nhân</h1>
+              <p class="page-desc">Lưu trữ từ vựng, ngữ cảnh sử dụng thực tế và phân loại theo chủ đề.</p>
+            </div>
+            <button class="btn btn-primary" onclick="openAddWordModal()">
+              ➕ Thêm từ mới
+            </button>
+          </div>
+
+          <!-- Filter & Search Toolbar -->
+          <div class="glass-card" style="padding: 12px 16px; margin-bottom: 16px; display: flex; gap: 10px; align-items: center;">
+            <input type="text" id="vocab-search-input" placeholder="🔍 Tìm kiếm từ vựng, nghĩa tiếng Việt, câu ví dụ..." style="flex: 2;" oninput="onVocabSearch()">
+            
+            <select id="vocab-filter-topic" style="flex: 1;" onchange="loadVocabularyTable()">
+              <option value="">Tất cả chủ đề</option>
+            </select>
+
+            <select id="vocab-filter-status" style="flex: 1;" onchange="loadVocabularyTable()">
+              <option value="">Tất cả trạng thái</option>
+              <option value="new">🆕 Mới thêm</option>
+              <option value="learning">📖 Đang học</option>
+              <option value="reviewing">🔄 Đang ôn tập</option>
+              <option value="mastered">⭐ Đã thuộc</option>
+            </select>
+          </div>
+
+          <!-- Vocabulary Table -->
+          <div class="glass-card" style="padding: 0; overflow: hidden;">
+            <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 13px;">
+              <thead>
+                <tr style="background: var(--bg-dark); border-bottom: 1px solid var(--border); color: var(--tn-cyan);">
+                  <th style="padding: 12px 16px; width: 50px;">Trạng thái</th>
+                  <th style="padding: 12px 16px;">Từ vựng</th>
+                  <th style="padding: 12px 16px;">Loại từ</th>
+                  <th style="padding: 12px 16px;">Nghĩa tiếng Việt</th>
+                  <th style="padding: 12px 16px;">Ngữ cảnh / Ví dụ</th>
+                  <th style="padding: 12px 16px; width: 90px;">SRS</th>
+                  <th style="padding: 12px 16px; width: 100px; text-align: right;">Hành động</th>
+                </tr>
+              </thead>
+              <tbody id="vocab-table-body">
+                <!-- Rows load bằng JS -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- ═════════ TAB 5: AI HUB ═════════ -->
+        <div id="tab-ai-hub" class="tab-panel">
+          <div class="page-header">
+            <h1 class="page-title">✨ AI Language Assistant</h1>
+            <p class="page-desc">Được trang bị 4 tính năng AI chuyên sâu: Phân tích từ, Kiểm tra câu, Sinh Flashcard từ bài đọc và IELTS Feedback.</p>
+          </div>
+
+          <div class="ai-subnav">
+            <button class="ai-tab-btn active" onclick="switchAiSubTab('assistant')">💡 AI Vocab Assistant</button>
+            <button class="ai-tab-btn" onclick="switchAiSubTab('sentence')">🔍 Sentence Analyzer</button>
+            <button class="ai-tab-btn" onclick="switchAiSubTab('generator')">⚡ Auto Flashcard Generator</button>
+            <button class="ai-tab-btn" onclick="switchAiSubTab('ielts')">📝 IELTS & Diary Feedback</button>
+          </div>
+
+          <!-- Sub-Tab 1: AI Vocab Assistant -->
+          <div id="ai-sub-assistant" class="ai-subpanel active">
+            <div class="glass-card" style="margin-bottom: 16px;">
+              <h3 style="font-size: 15px; font-weight: 700; color: var(--tn-cyan); margin-bottom: 8px;">Nhập một từ vựng để AI phân tích chuyên sâu</h3>
+              <div style="display: flex; gap: 10px;">
+                <input type="text" id="ai-word-input" placeholder="Ví dụ: ubiquitous, resilient, procrastinate, meticulous..." style="flex: 1;" onkeydown="if(event.key==='Enter') runAiExplainWord()">
+                <button class="btn btn-ai" onclick="runAiExplainWord()">Phân tích từ</button>
+              </div>
+            </div>
+            <div id="ai-word-result" class="glass-card" style="display: none;">
+              <!-- Kết quả phân tích từ -->
+            </div>
+          </div>
+
+          <!-- Sub-Tab 2: Sentence Analyzer -->
+          <div id="ai-sub-sentence" class="ai-subpanel" style="display: none;">
+            <div class="glass-card" style="margin-bottom: 16px;">
+              <h3 style="font-size: 15px; font-weight: 700; color: var(--tn-blue); margin-bottom: 8px;">Viết câu chứa từ mới để AI kiểm tra ngữ pháp & độ tự nhiên</h3>
+              <div class="form-group">
+                <input type="text" id="ai-sentence-target" placeholder="Từ vựng mục tiêu (tùy chọn, ví dụ: accomplish)">
+              </div>
+              <div class="form-group">
+                <textarea id="ai-sentence-input" rows="3" placeholder="Nhập câu tiếng Anh do bạn tự viết..."></textarea>
+              </div>
+              <button class="btn btn-primary" onclick="runAiAnalyzeSentence()">Kiểm tra & Phân tích câu</button>
+            </div>
+            <div id="ai-sentence-result" class="glass-card" style="display: none;">
+              <!-- Kết quả chấm câu -->
+            </div>
+          </div>
+
+          <!-- Sub-Tab 3: Flashcard Generator -->
+          <div id="ai-sub-generator" class="ai-subpanel" style="display: none;">
+            <div class="glass-card" style="margin-bottom: 16px;">
+              <h3 style="font-size: 15px; font-weight: 700; color: var(--tn-purple); margin-bottom: 8px;">Dán một đoạn văn Reading hoặc Transcript Listening</h3>
+              <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 10px;">AI sẽ tự động lọc từ vựng đắt giá, bóc tách câu ví dụ từ bài đọc và tạo thành Flashcards.</p>
+              <textarea id="ai-generator-input" rows="6" placeholder="Dán bài báo, bài luận hoặc transcript tiếng Anh vào đây..."></textarea>
+              <button class="btn btn-ai" style="margin-top: 10px;" onclick="runAiGenerateFlashcards()">Tự động sinh bộ Flashcards</button>
+            </div>
+            <div id="ai-generator-result" class="glass-card" style="display: none;">
+              <!-- Danh sách flashcards sinh ra kèm nút Import Tất Cả -->
+            </div>
+          </div>
+
+          <!-- Sub-Tab 4: IELTS & Diary Feedback -->
+          <div id="ai-sub-ielts" class="ai-subpanel" style="display: none;">
+            <div class="glass-card" style="margin-bottom: 16px;">
+              <h3 style="font-size: 15px; font-weight: 700; color: var(--tn-yellow); margin-bottom: 8px;">Vocabulary from Real Life & IELTS Feedback</h3>
+              <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 10px;">Dán bài viết hoặc nhật ký tiếng Anh của bạn. AI sẽ chỉ ra các từ cơ bản (A2/B1) và gợi ý từ vựng Band 7.5+ thay thế.</p>
+              <textarea id="ai-ielts-input" rows="7" placeholder="Nhập bài viết Writing Task 2 hoặc nhật ký hàng ngày của bạn..."></textarea>
+              <button class="btn btn-primary" style="margin-top: 10px;" onclick="runAiIeltsFeedback()">Đánh giá vốn từ vựng</button>
+            </div>
+            <div id="ai-ielts-result" class="glass-card" style="display: none;">
+              <!-- Kết quả feedback IELTS -->
+            </div>
+          </div>
+        </div>
+
+        <!-- ═════════ TAB 6: ANALYTICS & SESSIONS ═════════ -->
+        <div id="tab-analytics" class="tab-panel">
+          <div class="page-header">
+            <h1 class="page-title">📈 Tiến độ học tập & Lịch sử</h1>
+            <p class="page-desc">Theo dõi sự phát triển vốn từ theo thời gian và tỷ lệ ghi nhớ Spaced Repetition.</p>
+          </div>
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 20px;">
+            <div class="glass-card">
+              <h3 style="font-size: 15px; font-weight: 700; color: var(--tn-purple); margin-bottom: 12px;">Phân bố trạng thái học (SM-2)</h3>
+              <div id="analytics-status-breakdown">
+                <!-- Thanh tiến trình các trạng thái -->
+              </div>
+            </div>
+
+            <div class="glass-card">
+              <h3 style="font-size: 15px; font-weight: 700; color: var(--tn-blue); margin-bottom: 12px;">Lịch sử phiên học gần đây</h3>
+              <div id="analytics-sessions-list" style="max-height: 220px; overflow-y: auto;">
+                <!-- Danh sách phiên học -->
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ═════════ TAB 7: DATA & IMPORT/EXPORT ═════════ -->
+        <div id="tab-data-manager" class="tab-panel">
+          <div class="page-header">
+            <h1 class="page-title">📥 Quản lý dữ liệu & Import/Export</h1>
+            <p class="page-desc">Hỗ trợ đầy đủ định dạng Excel/CSV của LexFlow cũ và xuất dữ liệu backup.</p>
+          </div>
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+            <div class="glass-card">
+              <h3 style="font-size: 15px; font-weight: 700; color: var(--tn-green); margin-bottom: 8px;">Nhập dữ liệu từ file (CSV / Excel)</h3>
+              <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 14px;">
+                Tương thích 100% với file LexFlow cũ có các cột: <code>word, type, meaning, example, translate_example</code>.
+              </p>
+              <input type="file" id="file-import-input" accept=".csv, .xlsx, .xls, .tsv" style="margin-bottom: 12px;">
+              <button class="btn btn-success" onclick="handleFileImport()">Tải lên & Import</button>
+            </div>
+
+            <div class="glass-card">
+              <h3 style="font-size: 15px; font-weight: 700; color: var(--tn-blue); margin-bottom: 8px;">Xuất dữ liệu dự phòng</h3>
+              <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 14px;">
+                Tải toàn bộ kho từ vựng kèm trạng thái SRS, chu kỳ lặp lại và kết quả ôn tập ra file CSV chuẩn UTF-8.
+              </p>
+              <a href="/api/export" class="btn btn-primary" download="julyflow_export.csv">
+                📤 Tải file CSV xuất dữ liệu
+              </a>
+            </div>
+          </div>
+        </div>
+
+      </main>
+    </div>
+  </div>
+
+  <!-- ── MODAL: ADD / EDIT WORD ── -->
+  <div class="modal-overlay" id="word-modal">
+    <div class="modal-box">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+        <h3 style="font-size: 17px; font-weight: 700; color: var(--tn-blue);" id="word-modal-title">Thêm từ vựng mới</h3>
+        <button class="btn btn-secondary" style="padding: 4px 8px;" onclick="closeAddWordModal()">✕</button>
+      </div>
+
+      <input type="hidden" id="modal-word-id">
+
+      <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 10px;">
+        <div class="form-group">
+          <label class="form-label">Từ tiếng Anh *</label>
+          <input type="text" id="modal-word" placeholder="e.g. ubiquitous">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Loại từ</label>
+          <input type="text" id="modal-type" placeholder="verb, adj, noun...">
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Phát âm (IPA)</label>
+        <input type="text" id="modal-pron" placeholder="e.g. /juːˈbɪk.wə.t̬əs/">
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Nghĩa tiếng Việt *</label>
+        <input type="text" id="modal-mean-vi" placeholder="e.g. có mặt ở khắp mọi nơi">
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Nghĩa tiếng Anh (tùy chọn)</label>
+        <input type="text" id="modal-mean-en" placeholder="e.g. present, appearing everywhere">
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Câu ví dụ thực tế</label>
+        <textarea id="modal-example" rows="2" placeholder="e.g. Smartphones have become ubiquitous in daily life."></textarea>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Bản dịch câu ví dụ</label>
+        <textarea id="modal-example-trans" rows="2" placeholder="e.g. Điện thoại thông minh đã trở nên phổ biến ở khắp nơi..."></textarea>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Ngữ cảnh sử dụng (Vocabulary from Real Life)</label>
+        <input type="text" id="modal-context" placeholder="e.g. Đọc báo The Guardian, Nghe Podcast, Luyện IELTS...">
+      </div>
+
+      <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 18px;">
+        <button class="btn btn-secondary" onclick="closeAddWordModal()">Hủy</button>
+        <button class="btn btn-primary" onclick="saveWordFromModal()">Lưu từ vựng</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── MODAL: SETTINGS ── -->
+  <div class="modal-overlay" id="settings-modal">
+    <div class="modal-box">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+        <h3 style="font-size: 17px; font-weight: 700; color: var(--tn-cyan);">⚙️ Cài đặt hệ thống</h3>
+        <button class="btn btn-secondary" style="padding: 4px 8px;" onclick="closeSettingsModal()">✕</button>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Google Gemini API Key (Tùy chọn)</label>
+        <input type="password" id="setting-gemini-key" placeholder="Nhập khóa AIzaSy... để bật mô hình Gemini Flash trực tiếp">
+        <div style="font-size: 11px; color: var(--text-dim); margin-top: 4px;">
+          Nếu không có API key, app sẽ tự động dùng bộ tri thức AI offline có sẵn cực kỳ thông minh.
+        </div>
+      </div>
+
+      <div class="form-group" style="margin-top: 14px;">
+        <label class="form-label">Giao diện (Theme)</label>
+        <select disabled>
+          <option selected>Tokyo Night (Mặc định)</option>
+        </select>
+      </div>
+
+      <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px;">
+        <button class="btn btn-secondary" onclick="closeSettingsModal()">Đóng</button>
+        <button class="btn btn-primary" onclick="saveAppSettings()">Lưu cài đặt</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── TOAST NOTIFICATION ── -->
+  <div id="toast" style="display: none; position: fixed; bottom: 24px; right: 24px; background: var(--bg-card); border: 1px solid var(--tn-blue); color: #fff; padding: 12px 20px; border-radius: var(--radius-md); box-shadow: var(--shadow-lg); z-index: 2000; font-size: 13px; font-weight: 600;"></div>
+
+  <script src="app.js"></script>
+</body>
+</html>
+
